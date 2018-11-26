@@ -7,10 +7,16 @@ var markers = []
 /**
  * Register Service Worker
  */
-if (navigator.serviceWorker) {
-  console.log('Register Service Worker');
-  navigator.serviceWorker.register('/sw.js')
-      .catch((err) => { console.error(err) });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
 }
 
 
@@ -172,10 +178,12 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.alt =restaurant.name+' image';
   li.append(image);
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
+  name.setAttribute('tabindex','0');
   li.append(name);
 
   const neighborhood = document.createElement('p');
@@ -189,6 +197,7 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
+  more.setAttribute('aria-label', `${restaurant.name} Details`)
   li.append(more)
 
   return li

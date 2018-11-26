@@ -4,7 +4,7 @@ var newMap;
 /**
  * Initialize map as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {  
+document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
 });
 
@@ -15,7 +15,7 @@ initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
-    } else {      
+    } else {
       self.newMap = L.map('map', {
         center: [restaurant.latlng.lat, restaurant.latlng.lng],
         zoom: 16,
@@ -27,14 +27,14 @@ initMap = () => {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
           '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
           'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox.streets'    
+        id: 'mapbox.streets'
       }).addTo(newMap);
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
     }
   });
-}  
- 
+}
+
 /* window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -85,15 +85,19 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
+  address.setAttribute('aria-label',`Address - ${restaurant.address}`);
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.alt =restaurant.name+' image';
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
+  cuisine.setAttribute('aria-label',`${restaurant.cuisine_type} Cuisine`);
 
-  // fill operating hours
+
+    // fill operating hours
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
@@ -128,6 +132,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
+  title.setAttribute('tabindex','0');
   container.appendChild(title);
 
   if (!reviews) {
@@ -148,18 +153,21 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  li.setAttribute('tabindex','0');
   const reviewHeader = document.createElement('div');
   reviewHeader.className = "review_header";
 
   const name = document.createElement('p');
   name.className = "reviewer_name";
   name.innerHTML = review.name;
+  name.setAttribute('aria-label',`Reviewer - ${review.name}`);
 
   reviewHeader.appendChild(name);
 
   const date = document.createElement('p');
   date.className = "review_date";
   date.innerHTML = review.date;
+  date.setAttribute('aria-label',`Review Date - ${review.date}`);
   reviewHeader.appendChild(date);
   li.appendChild(reviewHeader);
 
@@ -170,6 +178,7 @@ createReviewHTML = (review) => {
   const rating = document.createElement('p');
   rating.className = "rating";
   rating.innerHTML = `Rating: ${review.rating}`;
+  rating.setAttribute('aria-label',`Ratings - ${review.rating}`);
   reviewDesc.appendChild(rating);
 
 
